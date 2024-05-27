@@ -1,5 +1,8 @@
-function createPlayer(token) {
-    return { token }
+function createPlayer(name, token, score) {
+    if (name == "") {
+        name = `Player ${token}`;
+    }
+    return { name, token, score}
 }
 
 const Gameboard = {
@@ -15,13 +18,13 @@ const Gameboard = {
         [0, 4, 8],
         [2, 4, 6]
     ],
-    init: function() {
+    startGame: function() {
         this.createPlayers();
         DisplayController.init();
     },
     createPlayers: function() {
-        this.player1 = createPlayer("X");
-        this.player2 = createPlayer("O");
+        this.player1 = createPlayer(document.querySelector("#player1").value, "X", 0);
+        this.player2 = createPlayer(document.querySelector("#player2").value, "O", 0);
     },
     getCurrentPlayer: function () {
         if (this.turnCount % 2 == 0) {
@@ -49,7 +52,9 @@ const Gameboard = {
     },
     checkWin: function() {
         if (this.evaluateWinSequence()){ 
-            DisplayController.displayResult(this.getCurrentPlayer().token);
+            DisplayController.displayResult(this.getCurrentPlayer().name);
+            this.incrementScore(this.getCurrentPlayer());
+            DisplayController.updateScore();
         } else if (this.turnCount < 8) {
             this.turnCount++;
         } else {
@@ -70,6 +75,9 @@ const Gameboard = {
             currentSequence = [];
         } return false;
     },
+    incrementScore: function(player) {
+        player.score++
+    },
     resetGameboard: function() {
         this.gameboard = Array(9).fill(null);
         this.turnCount = 0;
@@ -79,16 +87,24 @@ const Gameboard = {
 
 
 const DisplayController = {
+    start: document.querySelector(".start-container"),
     result: document.querySelector(".result-container"),
     resultText: document.querySelector(".result-output"),
     items: document.querySelectorAll(".grid-item"),
     selector: document.querySelector(".selector-token"),
+    score1: document.querySelector(".score1"),
+    score2: document.querySelector(".score2"),
     init: function () {
+        this.start.classList.remove("active");
         this.selector.innerHTML = `${Gameboard.getCurrentPlayer().token}`;
     },
     render: function (square) {
         this.items[square].innerHTML = `${Gameboard.getCurrentPlayer().token}`;
         this.selector.innerHTML = `${Gameboard.getNextPlayer().token}`;
+    },
+    updateScore: function () {
+        this.score1.innerHTML = `X : ${Gameboard.player1.score}`;
+        this.score2.innerHTML = `O: ${Gameboard.player2.score}`;
     },
     reset: function () {
         for (i in this.items) {
@@ -100,7 +116,7 @@ const DisplayController = {
         if (winner === undefined){
             this.resultText.innerHTML = `Draw!`;
         } else {
-            this.resultText.innerHTML = `Player ${winner} wins!`;
+            this.resultText.innerHTML = `${winner} wins!`;
         }
     },
     playAgain: function () {
@@ -108,6 +124,4 @@ const DisplayController = {
         Gameboard.resetGameboard();
     }
 }
-
-Gameboard.init();
 

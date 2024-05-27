@@ -16,8 +16,25 @@
             <p>Current Token</p>
             <h2 class="selector-token"></h2>
         </div>
+        <div class="selector">
+            <p>Score</p>
+            <h2 class="score1"></h2>
+            <h2 class="score2"></h2>
+        </div>
     </div>
     <h1>G1deon's Tic-Tac-Toe</h1>
+    <div class="start-container active">
+        <div class="start">
+            <p>Enter Player Names</p>
+            <form>
+                <label for="player1">X: </label>
+                <input type="text" id="player1" name="player1" placeholder="X">
+                <label for="player2">O: </label>
+                <input type="text" id="player2" name="player2" placeholder="O">
+                <input type="button" value="Start Game" onclick="Gameboard.startGame()">
+            </form>
+        </div>
+    </div>
     <div class="game-container">
         <div class="one">
             <input class="grid-button" type="button" onclick="Gameboard.validatePosition(0)"/>
