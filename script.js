@@ -1,6 +1,5 @@
 function createPlayer(token) {
-    return { 
-        token: token}
+    return { token }
 }
 
 const Gameboard = {
@@ -17,40 +16,12 @@ const Gameboard = {
         [2, 4, 6]
     ],
     init: function() {
-        this.welcome();
         this.createPlayers();
-        this.playerTurn();
-    },
-    welcome: function () {
-        console.log("Welcome to Tic-Tac-Toe! Player X will move first!");
+        DisplayController.init();
     },
     createPlayers: function() {
         this.player1 = createPlayer("X");
         this.player2 = createPlayer("O");
-    },
-    playerTurn: function() {
-        console.log(`It is ${this.getCurrentPlayer().token}'s Turn. Choose your square.`);
-        this.placeToken(prompt("Which square?"));
-    },
-    validatePosition: function (square) {
-        if (this.gameboard[square] === null) {
-            this.placeToken(square);
-        } else {
-            console.log("That square is already taken! That's cheating! Try again.");
-            this.playerTurn();
-        }
-    },
-    placeToken: function (square) {
-        this.gameboard[square] = this.getCurrentPlayer().token;
-        this.render();
-        if (this.checkWin()){ 
-            console.log(`${this.getCurrentPlayer().token} Wins!`);
-        } else if (this.turnCount < 8) {
-            this.turnCount++;
-            this.playerTurn();
-        } else {
-            console.log("DRAW!");
-        }
     },
     getCurrentPlayer: function () {
         if (this.turnCount % 2 == 0) {
@@ -59,7 +30,33 @@ const Gameboard = {
             return this.player2;
         }
     },
+    getNextPlayer: function () {
+        if (this.turnCount % 2 == 0){
+            return this.player2;
+        } else {
+            return this.player1;
+        }
+    },
+    validatePosition: function (square) {
+        if (this.gameboard[square] === null) {
+            this.placeToken(square);
+        }
+    },
+    placeToken: function (square) {
+        this.gameboard[square] = this.getCurrentPlayer().token;
+        DisplayController.render(square);
+        this.checkWin();
+    },
     checkWin: function() {
+        if (this.evaluateWinSequence()){ 
+            DisplayController.displayResult(this.getCurrentPlayer().token);
+        } else if (this.turnCount < 8) {
+            this.turnCount++;
+        } else {
+            alert("DRAW!");
+        }
+    },
+    evaluateWinSequence: function () {
         for (let combination in this.winCominbations){
             let currentSequence = [];
             for (i = 0; i < 3; i++){
@@ -73,31 +70,44 @@ const Gameboard = {
             currentSequence = [];
         } return false;
     },
-    render: function() {
-        console.log(`${this.gameboard[0]} | ${this.gameboard[1]} | ${this.gameboard[2]}`);
-        console.log(`${this.gameboard[3]} | ${this.gameboard[4]} | ${this.gameboard[5]}`);
-        console.log(`${this.gameboard[6]} | ${this.gameboard[7]} | ${this.gameboard[8]}`);
-    },
     resetGameboard: function() {
-        this.gameboard = [];
-        this.render();
+        this.gameboard = Array(9).fill(null);
+        this.turnCount = 0;
+        DisplayController.reset();
     }
 }
 
-// (function () {
-//     const container = document.querySelector(".game-container");
-//     const slot = document.querySelectorAll(".grid-items");
 
-//     for (i = 0; i < slot.length; i++) {
-//         AttachEventListener(slot[i])
-//     }
-
-//     function AttachEventListener(item){
-        
-//     }
-// })();
-// Gameboard.init();
-
-function consolelog() {
-    console.log("HEY");
+const DisplayController = {
+    result: document.querySelector(".result-container"),
+    resultText: document.querySelector(".result-output"),
+    items: document.querySelectorAll(".grid-item"),
+    selector: document.querySelector(".selector-token"),
+    init: function () {
+        this.selector.innerHTML = `${Gameboard.getCurrentPlayer().token}`;
+    },
+    render: function (square) {
+        this.items[square].innerHTML = `${Gameboard.getCurrentPlayer().token}`;
+        this.selector.innerHTML = `${Gameboard.getNextPlayer().token}`;
+    },
+    reset: function () {
+        for (i in this.items) {
+            this.items[i].innerHTML = "";
+        }
+    },
+    displayResult: function (winner) {
+        this.result.classList.add("active");
+        if (winner === undefined){
+            this.resultText.innerHTML = `Draw!`;
+        } else {
+            this.resultText.innerHTML = `Player ${winner} wins!`;
+        }
+    },
+    playAgain: function () {
+        this.result.classList.remove("active");
+        Gameboard.resetGameboard();
+    }
 }
+
+Gameboard.init();
+
