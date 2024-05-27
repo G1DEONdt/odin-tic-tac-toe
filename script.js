@@ -77,7 +77,27 @@ const Gameboard = {
         console.log(`${this.gameboard[0]} | ${this.gameboard[1]} | ${this.gameboard[2]}`);
         console.log(`${this.gameboard[3]} | ${this.gameboard[4]} | ${this.gameboard[5]}`);
         console.log(`${this.gameboard[6]} | ${this.gameboard[7]} | ${this.gameboard[8]}`);
+    },
+    resetGameboard: function() {
+        this.gameboard = [];
+        this.render();
     }
 }
 
-Gameboard.init();
+// (function () {
+//     const container = document.querySelector(".game-container");
+//     const slot = document.querySelectorAll(".grid-items");
+
+//     for (i = 0; i < slot.length; i++) {
+//         AttachEventListener(slot[i])
+//     }
+
+//     function AttachEventListener(item){
+        
+//     }
+// })();
+// Gameboard.init();
+
+function consolelog() {
+    console.log("HEY");
+}
